@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Update Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 40px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #ff2e2e;
+        }
+        h1 {
+            color: #ff6b35;
+            margin-bottom: 30px;
+        }
+        .test-item {
+            background: #333;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #666;
+        }
+        .test-item.pass {
+            border-left-color: #28a745;
+        }
+        .test-item.fail {
+            border-left-color: #dc3545;
+        }
+        .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .status.pass {
+            background: #28a745;
+            color: white;
+        }
+        .status.fail {
+            background: #dc3545;
+            color: white;
+        }
+        button {
+            background: linear-gradient(135deg, #ff2e2e, #ff6b35);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 46, 46, 0.4);
+        }
+        .instructions {
+            background: #444;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        code {
+            background: #555;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #ff6b35;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 File Update Verification</h1>
+        
+        <div id="results">
+            <p>Click the button below to check if your files are updated:</p>
+            <button onclick="runTests()">Run Verification Tests</button>
+            <button onclick="clearCacheAndReload()">Clear Cache & Reload</button>
+        </div>
+
+        <div class="instructions">
+            <h3>If Tests Fail, Follow These Steps:</h3>
+            <ol>
+                <li><strong>Close ALL browser windows/tabs completely</strong></li>
+                <li>Open File Explorer and navigate to:<br>
+                    <code>C:\xampp\htdocs\college-fest-system\js\</code>
+                </li>
+                <li>Delete both files:
+                    <ul>
+                        <li><code>main.js</code></li>
+                        <li><code>admin.js</code></li>
+                    </ul>
+                </li>
+                <li>Copy the NEW versions of these files to that folder</li>
+                <li>Verify the file timestamp shows TODAY'S date</li>
+                <li>Open browser and press <code>Ctrl + Shift + Delete</code></li>
+                <li>Clear "Cached images and files"</li>
+                <li>Close browser again</li>
+                <li>Reopen and come back to this page</li>
+                <li>Click "Run Verification Tests" again</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        function runTests() {
+            const resultsDiv = document.getElementById('results');
+            let html = '<h3>Test Results:</h3>';
+            
+            // Test 1: Check if festUtils exists
+            const test1 = typeof festUtils !== 'undefined';
+            html += `
+                <div class="test-item ${test1 ? 'pass' : 'fail'}">
+                    <span class="status ${test1 ? 'pass' : 'fail'}">${test1 ? '✓ PASS' : '✗ FAIL'}</span>
+                    <strong>Test 1:</strong> festUtils object exists
+                    ${!test1 ? '<br><em>Error: main.js not loaded or has syntax errors</em>' : ''}
+                </div>
+            `;
+            
+            // Test 2: Check if animateNumber is in festUtils
+            const test2 = test1 && typeof festUtils.animateNumber !== 'undefined';
+            html += `
+                <div class="test-item ${test2 ? 'pass' : 'fail'}">
+                    <span class="status ${test2 ? 'pass' : 'fail'}">${test2 ? '✓ PASS' : '✗ FAIL'}</span>
+                    <strong>Test 2:</strong> festUtils.animateNumber exists
+                    ${!test2 && test1 ? '<br><em>Error: main.js is OLD VERSION - cache not cleared or file not replaced</em>' : ''}
+                </div>
+            `;
+            
+            // Test 3: Check if animateNumber is a function
+            const test3 = test2 && typeof festUtils.animateNumber === 'function';
+            html += `
+                <div class="test-item ${test3 ? 'pass' : 'fail'}">
+                    <span class="status ${test3 ? 'pass' : 'fail'}">${test3 ? '✓ PASS' : '✗ FAIL'}</span>
+                    <strong>Test 3:</strong> animateNumber is a function
+                </div>
+            `;
+            
+            // Test 4: List all available functions
+            if (test1) {
+                const functions = Object.keys(festUtils);
+                html += `
+                    <div class="test-item pass">
+                        <strong>Available Functions (${functions.length}):</strong><br>
+                        <code>${functions.join(', ')}</code>
+                    </div>
+                `;
+            }
+            
+            // Overall result
+            const allPass = test1 && test2 && test3;
+            html += `
+                <div class="test-item ${allPass ? 'pass' : 'fail'}" style="margin-top: 20px; font-size: 18px;">
+                    <span class="status ${allPass ? 'pass' : 'fail'}">${allPass ? '✓ ALL TESTS PASSED' : '✗ SOME TESTS FAILED'}</span>
+                    ${allPass ? 
+                        '<br><strong style="color: #28a745;">✅ Files are updated correctly! You can now use the admin panel.</strong>' : 
+                        '<br><strong style="color: #dc3545;">❌ Files need to be updated. Follow the instructions above.</strong>'
+                    }
+                </div>
+            `;
+            
+            html += `
+                <button onclick="runTests()" style="margin-top: 20px;">Run Tests Again</button>
+                <button onclick="clearCacheAndReload()">Clear Cache & Reload</button>
+                ${allPass ? '<br><a href="admin.html" style="display:inline-block; margin-top:20px; color:#ff6b35;">Go to Admin Panel →</a>' : ''}
+            `;
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function clearCacheAndReload() {
+            // Try to clear cache using various methods
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    names.forEach(function(name) {
+                        caches.delete(name);
+                    });
+                });
+            }
+            
+            // Add timestamp to prevent caching
+            const timestamp = new Date().getTime();
+            window.location.href = window.location.href.split('?')[0] + '?t=' + timestamp;
+        }
+    </script>
+</body>
+</html>
